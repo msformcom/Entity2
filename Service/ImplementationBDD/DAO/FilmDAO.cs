@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Service.ImplementationBDD.DAO
 {
     // Classe => mappée à une table
-    internal class FilmDAO 
+    public class FilmDAO 
     {
         // Propriétés => mappées aux colonnes
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -20,6 +20,9 @@ namespace Service.ImplementationBDD.DAO
 
         public DateTime DateCreation { get; set; }
         public DateTime DateModification { get; set; }
+
+        //public GenreDAO Genre { get; set; }
+        public ICollection<GenreDAO> Genres { get; set; }
 
     }
 }

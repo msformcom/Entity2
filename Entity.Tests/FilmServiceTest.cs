@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Service;
 using Service.ImplementationBDD;
 using System;
@@ -12,10 +13,22 @@ namespace Entity.Tests
     [TestClass]
     public class FilmServiceTest
     {
+        //[TestInitialize]
+        //void Initialize()
+        //{
+        //    #region S'assurer que la BDD est créée
+            
+
+
+        //    #endregion
+        //}
 
         [TestMethod]
         public async Task SearchTest()
         {
+
+
+
             var chaineRecherche = "Rien que";
 
             // Attention pas de couplage fort
@@ -28,8 +41,12 @@ namespace Entity.Tests
            var service = DI.Provider.GetRequiredService<IFilmService>();
 
             var results = await service.SearchFilmAsync();
-
+            // results est un IEnumerable 
+            // Peut etre une liste avec les resultat
+            // Peut être un IEnumerable qui va générer les résultat
           
+            var resultats=results.ToList(); 
+
 
 
         }

@@ -14,13 +14,22 @@ namespace Service.ImplementationBDD
 
     public class FilmServiceBDD : IFilmService
     {
-        private readonly DbContextOptions options;
+        private readonly DbContextOptions<CinemaContext> options;
+        private readonly ModelBuilderDelegate modelSpecs;
 
         // La création d'un context necéssite de connaitre les options DbContextOptions
         // Les options sero,t enregistrées  dans le provider
-        public FilmServiceBDD(DbContextOptions options)
+        public FilmServiceBDD(DbContextOptions<CinemaContext> options,
+                ModelBuilderDelegate modelSpecs
+            
+            )
         {
             this.options = options;
+            this.modelSpecs = modelSpecs;
+            // Création de la BDD si elle n'existe pas
+            var context=new CinemaContext(options,this.modelSpecs);
+            context.Database.EnsureCreated();
+
         }
         public Task<IFilm> ReadAsync(string Imdb)
         {
@@ -34,7 +43,7 @@ namespace Service.ImplementationBDD
 
         public Task<IEnumerable<ISearchResult>> SearchFilmAsync(ISearchFilm? critere)
         {
-            var context = new CinemaContext(this.options);
+            var context = new CinemaContext(this.options,this.modelSpecs);
           
                 // A partir de context.Films, je manipule une requete
                 IQueryable<FilmDAO> query = context.Films;// SELECT * FROM Tbl_Films   
@@ -52,10 +61,11 @@ namespace Service.ImplementationBDD
                     Libelle = c.Titre,
                     Description = $"Film de {c.Duree} minutes"
                 });
+           
                 // On renvoit un IEnumerable => La requete n'est pas encore envoyée
                 // Avantage : C'est seulement si le code appelant enumere que la requete sera envoyée
                 // Inconvénient => Il faut gérer de manière élégante la fermeture du context
-                return Task.FromResult(resultats as IEnumerable<ISearchResult>);
+                return Task.FromResult(resultats.ToList() as IEnumerable<ISearchResult>);
             
 
      
