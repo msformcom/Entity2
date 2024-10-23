@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Service.ImplementationBDD.DAO
 {
     // Classe => mappée à une table
-    public class FilmDAO 
+    public  class FilmDAO : ITimeStamp
     {
         // Propriétés => mappées aux colonnes
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -25,7 +25,7 @@ namespace Service.ImplementationBDD.DAO
         public DateTime DateModification { get; set; }
 
         //public GenreDAO Genre { get; set; }
-        public ICollection<GenreDAO> Genres { get; set; }
+        public virtual ICollection<GenreDAO> Genres { get; set; } = new HashSet<GenreDAO>();
 
     }
 }

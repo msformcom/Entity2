@@ -13,7 +13,7 @@ namespace Service.ImplementationBDD.DAO
         public int AgeMinimum { get; set; }
 
         // Un GenreDAO est associée à un ensemble de Film
-        public ICollection<FilmDAO> Films { get; set; }
+        public virtual ICollection<FilmDAO> Films { get; set; } = new HashSet<FilmDAO>();
 
     }
 }

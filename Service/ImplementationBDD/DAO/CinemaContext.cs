@@ -14,6 +14,7 @@ namespace Service.ImplementationBDD.DAO
 
     public class CinemaContext : DbContext
     {
+
         private readonly ModelBuilderDelegate modelSpecs;
 
         // DbContextOptions est un objet qui permet au context de connaître
@@ -28,6 +29,17 @@ namespace Service.ImplementationBDD.DAO
         }
         // Ajouter une table pour les films
         internal DbSet<FilmDAO> Films { get; set; }
+
+
+        internal IQueryable<FilmDAO> FilmsAvecGenre
+        {
+            get
+            {
+                return Films.Include(c=>c.Genres);
+            }
+        }
+
+
         internal DbSet<GenreDAO> Genres { get; set; }
 
         // Cette méthode permet de donner les specification de la BDD

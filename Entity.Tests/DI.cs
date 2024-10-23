@@ -11,6 +11,8 @@ using Service.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,7 +53,7 @@ namespace Entity.Tests
 
             // Ajout des options nécessaires à la construction du FilmServiceBDD
             // Par l'utilisation d'un DbConTextOtionsBuilder
-            var optionsBuilder = new DbContextOptionsBuilder<CinemaContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<Service.ImplementationBDD.DAO.CinemaContext>();
             // Permet de configurer les options pour utiliser le provider de sql server
             optionsBuilder.UseSqlServer(config.GetConnectionString("CinemaBDD")
                 
@@ -59,16 +61,39 @@ namespace Entity.Tests
             // Permet de configurer les options de logging
             optionsBuilder.UseLoggerFactory(loggerFactory);
 
+            optionsBuilder.AddInterceptors(new RecompileInterceptor());
+
+            // Si on veut utiliser le Lasy Loading
+            optionsBuilder.UseLazyLoadingProxies();
+
             // Ici : Configurer le noms des tables...
 
 
             var optionsContext = optionsBuilder.Options;
-            services.AddSingleton<DbContextOptions<CinemaContext>>(optionsContext);
+            services.AddSingleton(optionsContext);
 
             // Passage des specification du model sous la forme d'une fonction
             services.AddSingleton<ModelBuilderDelegate>(m =>
             {
                 
+                // Dans les paramètres du context, j'associe la fonction static EuroFrancs
+                // de la class FonctionsServer à la fonction EuroFrancs du server
+                m.HasDbFunction(typeof(FonctionsServer)
+                    .GetMethod(nameof(FonctionsServer.EuroFrancs),
+                            new[] { typeof(decimal) }), o =>
+                            {
+                                o.HasName("EuroFrancs");
+                                //o.HasParameter("prix")
+                            });
+                m.HasDbFunction(typeof(FonctionsServer)
+                .GetMethod(nameof(FonctionsServer.FilmsPourAge),
+                        new[] { typeof(int) }), o =>
+                        {
+                            o.HasName("FilmsPourAge");
+                            //o.HasParameter("prix")
+                        });
+
+
                 // m est du type ModelBuilder
                 // Options concernant la table associée à FilmDAO
                 m.Entity<FilmDAO>(options =>
@@ -129,6 +154,9 @@ namespace Entity.Tests
                 var G2 = new GenreDAO() { AgeMinimum = 12, Libelle = "Comédie" };
                 var G3 = new GenreDAO() { AgeMinimum = 12, Libelle = "SF" };
 
+                //G1.Films.Add(F1);
+                //F1.Genres.Add(G2);
+                //F2.Genres.Add(G3);
 
                 m.Entity<GenreDAO>().HasData(G1, G2, G3);
                 m.Entity<FilmDAO>().HasData(F1, F2);
@@ -185,7 +213,8 @@ namespace Entity.Tests
 
             #endregion
 
-
+            // Ajoute la possibilité à DI de construire un CinemaContext
+            services.AddScoped<Service.ImplementationBDD.DAO.CinemaContext>();
 
             // Je créé un provider 
             Provider = services.BuildServiceProvider();
