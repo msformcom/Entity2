@@ -1,6 +1,7 @@
 ﻿using Service.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,9 @@ namespace Service.ImplementationBDD.DAO
     {
         // Propriétés => mappées aux colonnes
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Titre { get; set; }
+
+
+        public string Title { get; set; }
         public string Imdb { get; set; }
 
         public int Duree { get; set; }

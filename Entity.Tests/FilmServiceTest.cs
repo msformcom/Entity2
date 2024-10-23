@@ -45,10 +45,22 @@ namespace Entity.Tests
             // Peut etre une liste avec les resultat
             // Peut être un IEnumerable qui va générer les résultat
           
-            var resultats=results.ToList(); 
+            var resultats=results.ToList();
 
+            Assert.AreEqual(resultats.Count(), 2);
 
+            // PremierItem est ici déclaré en tant que ISerachResult
+            // => Pas d'id
+            // La classe à l'intérieur de cette variable est un SearchResult => Id
+            var PremierItem = resultats.First();
+           
+            var PremierFilm = await service.ReadAsync(PremierItem);
 
+            PremierFilm.Duree += 1;
+
+            await service.UpdateAsync(PremierFilm);
+
+            var  PremierFilmEnBDD = await service.ReadAsync(PremierItem);
         }
     }
 }

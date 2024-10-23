@@ -15,6 +15,7 @@ namespace Service
         public Task<IFilm> ReadAsync(string Imdb);
         public Task<IFilm>  ReadAsync(ISearchResult searchResult);
 
+        public Task<IFilm> UpdateAsync(IFilm film);
 
     }
 }
